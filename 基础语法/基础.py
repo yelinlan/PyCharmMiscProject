@@ -1,4 +1,7 @@
 # 测试数据类型
+from 基础语法.hello.sayHello import say_hello as hi
+
+
 def data_type():
     print(type(1))
     print(type(1.0))
@@ -22,10 +25,13 @@ def comment():
     print('\t单引号字符串')
 
 
-# 测试格式化字符串
+# 测试格式化字符串md
+
 def format():
+    a = 1
     print("{} {}".format("hello", "world"))
     print("%s %s" % ("hello", "world"))
+    print(f"hello world{a}")
 
 
 # 测试运算符
@@ -288,12 +294,145 @@ def copy_operation():
 
 # 测试函数
 def function_operation():
-    def function_1(a=10, b=101):
+    def function_1(a, b):
         return a, b  # 返回多个值
+
+    print(function_1(1, 2))
+
+
+# 测试默认值函数
+def default_value_function():
+    def function_1(a, b=2):
+        return a, b
 
     print(function_1(1))
 
 
+# 测试可变参数函数
+def variable_function():
+    def function_1(*args):
+        print(args)
+        for arg in args:
+            print(arg)
+        return args
+
+    print(function_1(1, 2, 3, 4, 5))
+
+
+# 测试关键字参数函数
+def keyword_function():
+    def function_1(**kwargs):
+        print(kwargs)
+        for key, value in kwargs.items():
+            print(key, value)
+        return kwargs
+
+    print(function_1(a=1, b=2, c=3, d=4, e=5))
+
+
+# 测试作用域
+def scope_operation():
+    a_inner = 1
+    b_inner = 2
+
+    def function_1():
+        a_i_i = 2
+        b_i_i = 3
+        print(a_i_i, b_i_i)
+
+    function_1()
+    print(a_inner, b_inner)
+
+
+# 测试匿名函数 （！！！不要使用！！！）
+def anonymous_function():
+    add = lambda a, b=1: a + b
+    print(add(1))
+    print(add(1, 2))
+
+
+import builtins
+
+
+# 测试内置函数
+def builtin_function():
+    print(dir(builtins))
+    print(abs(-1))
+    print(all([1, 2, 3, 4, 5]))
+    print(any([0, 0, 0, 0, 1]))
+    print(bin(10))
+    print(bool(1))
+    print(chr(65))
+    print(ord('A'))
+    print(divmod(10, 3))
+    print(enumerate([1, 2, 3, 4, 5]))
+    print(filter(lambda x: x % 2 == 0, [1, 2, 3, 4, 5]))
+    print(hex(10))
+    print(id(1))
+    print(input("请输入："))
+    print(len([1, 2, 3, 4, 5]))
+    print(map(lambda x: x * x, [1, 2, 3, 4, 5]))
+    print(max([1, 2, 3, 4, 5]))
+    print(min([1, 2, 3, 4, 5]))
+    print(oct(10))
+    print(pow(2, 3))
+    print(range(10))
+    print(reversed([1, 2, 3, 4, 5]))
+    print(round(10.5))
+    print(sorted([1, 2, 3, 4, 5]))
+    print(sum([1, 2, 3, 4, 5]))
+    print(type(1))
+    print(zip([1, 2, 3, 4, 5], [6, 7, 8, 9, 10]))
+
+
+# 测试拆包
+def unpacking_operation():
+    a, *b, c = [1, 2, 3, 4, 5]
+    print(a, b, c)
+    print(*[1, 2, 3, 4, 5])
+    print(*range(1, 10))
+    print(*range(10))
+    print(*"12345")
+    print(*(1, 2, 3, 4, 5))
+    print(*[[1, 2, 3], [4, 5, 6]])
+    print(*(x for x in range(10)))
+    print(*map(lambda x: x * x, [1, 2, 3, 4, 5]))
+    print(*filter(lambda x: x % 2 == 0, [1, 2, 3, 4, 5]))
+
+
+# 测试异常
+def exception_operation():
+    try:
+        print(1 / 0)
+    except Exception as e:
+        print(e)
+        # raise Exception("异常")
+        # raise e
+        # raise
+    else:
+        print(3)
+    finally:
+        print(4)
+
+
+# pip换源
+"""
+# 清华源
+pip config set global.index-url https://pypi.tuna.tsinghua.edu.cn/simple
+# 阿里源
+pip config set global.index-url https://mirrors.aliyun.com/pypi/simple/
+# 腾讯源
+pip config set global.index-url http://mirrors.cloud.tencent.com/pypi/simple
+# 豆瓣源
+pip config set global.index-url http://pypi.douban.com/simple/# 换回默认源pip config unset global.index-url
+"""
+
+
+# 测试模块
+def module_operation():
+    hi("linda")
+
+
 # 按装订区域中的绿色按钮以运行脚本。
 if __name__ == '__main__':
-    function_operation()
+    module_operation()
