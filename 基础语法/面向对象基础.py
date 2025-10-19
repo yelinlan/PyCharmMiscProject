@@ -89,5 +89,68 @@ def test_static_method():
     Teacher.hello_class()
 
 
+class Principle(object):
+
+    # 父类Object方法 创建对象 返回self给__init__
+    def __new__(cls, *args, **kwargs):
+        print("new")
+        return super().__new__(cls)
+
+    # 初始化对象
+    def __init__(self, name):
+        print("init")
+        self.name = name
+
+
+# 测试__new__
+def test_new():
+    Principle("张三")
+
+
+class Singleton(object):
+    __instance = None
+    __first_init = False
+    __isSingleton = True
+
+    def __new__(cls, *args, **kwargs):
+        if cls.__isSingleton:
+            if cls.__instance is None:
+                cls.__instance = super().__new__(cls)
+        else:
+            cls.__instance = super().__new__(cls)
+        return cls.__instance
+
+    def __init__(self):
+        if not self.__first_init:
+            print("初始化")
+            print(self)
+            self.__first_init = True
+            self.name = "张三"
+
+
+# 测试单例模式
+def test_singleton():
+    Singleton()
+    Singleton()
+    Singleton()
+
+
+class Magic:
+    def __init__(self):
+        self.name = "张三"
+        self.age = 18
+        self.sex = "男"
+        self.address = "中国"
+        self.phone = "123456789"
+
+    def __str__(self):
+        return f"name={self.name} age={self.age} sex={self.sex} address={self.address} phone={self.phone}"
+
+
+# 测试魔法方法
+def test_magic():
+    print(Magic())
+
+
 if __name__ == "__main__":
-    test_static_method()
+    test_magic()

@@ -57,6 +57,7 @@ def escape():
     print("hello\tworld")
     print("hello\bworld")  # \b 退格
     print("hello\rworld")  # \r 回车
+    print(r"C:\Users\Administrator\PycharmProjects\PyCharmMiscProject\基础语法\语法基础.py")  #
 
 
 # 测试for
@@ -488,6 +489,47 @@ def decorator_operation_annotation(*args):
     print("函数")
 
 
+class MyIterator:
+    def __init__(self, stop):
+        self.stop = stop
+        self.current = 0
+
+    def __iter__(self):
+        return self
+
+    def __next__(self):
+        if self.current < self.stop:
+            current = self.current
+            self.current += 1
+            return current
+        else:
+            raise StopIteration
+
+
+# 测试迭代器类
+def iterator_operation():
+    my_iterator = MyIterator(10)
+    for i in my_iterator:
+        print(i)
+
+
+# 测试列表推导式
+def list_comprehension_operation():
+    print([i for i in range(10)])
+    print([i * i for i in range(10)])
+    print([i * i for i in range(10) if i % 2 == 0])
+
+
+# 测试生成器
+def generator_operation():
+    def generator():
+        for i in range(10):
+            yield i  # 每次取出一个值
+
+    for i in generator():
+        print(i)
+
+
 # 按装订区域中的绿色按钮以运行脚本。
 if __name__ == '__main__':
-    decorator_operation_annotation()
+    generator_operation()
