@@ -433,6 +433,61 @@ def module_operation():
     hi("linda")
 
 
+# 测试递归
+def recursion_operation():
+    def factorial(n):
+        if n == 1:
+            return 1
+        return n * factorial(n - 1)
+
+    print(factorial(5))
+
+
+# 测试闭包
+def closure_operation():
+    def outer():
+        total = 100
+
+        def inner():
+            print(total)
+
+        return inner
+
+    outer()()
+
+
+# 测试装饰器
+def decorator_operation():
+    def function_1():
+        print("函数")
+
+    def decorator(func):
+        def wrapper():
+            print("开始")
+            func()
+            print("结束")
+
+        return wrapper
+
+    decorator(function_1)()
+
+
+def decorator1(func):
+    def wrapper(*args):
+        print("开始")
+        func()
+        print("结束")
+        print(args)
+
+    return wrapper
+
+
+# 测试装饰器 注解方式
+@decorator1
+def decorator_operation_annotation(*args):
+    print("函数")
+
+
 # 按装订区域中的绿色按钮以运行脚本。
 if __name__ == '__main__':
-    module_operation()
+    decorator_operation_annotation()
