@@ -1,6 +1,7 @@
 import random
 import re
 import zlib
+from itertools import permutations
 from timeit import Timer
 
 
@@ -381,6 +382,45 @@ def test87():
     print(a - b)
 
 
+def test88():
+    x = [i for i in range(10) if i % 2 == 0]
+    y = [i for i in range(10) if i % 2 != 0]
+    for (i, j) in zip(x, y):
+        print(i, j)
+
+
+def test89():
+    # 反转字符串
+    print("123456789qwsdffg"[::-1])
+
+    print("123456789qwsdffg"[-1:-4:-1])
+
+    print("123456789qwsdffg"[::2])
+
+
+def test96():
+    print(list(permutations([1, 2, 3])))
+
+    for x in range(36):
+        if x * 4 + (35 - x) * 2 == 94:
+            print(x)
+            print(35 - x)
+
+    # 打印乘法表
+    res = []
+    for i in range(1, 10):
+        for j in range(1, i + 1):
+            print(f"{j}x{i}={i * j}\t", end="")
+        print()
+
+
+def test97():
+    global f
+    with open("../resources/英语文章.txt", "r", encoding="utf-8") as f:
+        s = f.read()
+        print(s.count("w"))
+
+
 # 列表推导
 if __name__ == "__main__":
-    test87()
+    test97()
