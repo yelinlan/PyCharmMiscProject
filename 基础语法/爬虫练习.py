@@ -2,8 +2,11 @@
 import base64
 import hashlib
 import json
+import os
 import random
 import re
+import shutil
+import string
 import time
 from re import findall
 
@@ -11,9 +14,15 @@ import numpy as np
 import requests
 from fake_useragent import UserAgent
 from lxml import etree
+from selenium import webdriver
 from selenium.webdriver import ActionChains
-from selenium.webdriver.chrome.service import Service
+from selenium.webdriver.chrome.service import Service as ChromeService
 from selenium.webdriver.common.by import By
+from selenium.webdriver.edge.service import Service as EdgeService
+from selenium.webdriver.remote.webdriver import WebDriver
+
+chrome = ChromeService("./chrome/chromedriver.exe")
+edge = EdgeService("./edge/msedgedriver.exe")
 
 
 def test01():
@@ -461,20 +470,45 @@ def test29():
 
     print("平均阅读数：", sum(view_comment) / len(view_comment))
 
-from selenium import webdriver
-from selenium.webdriver.chrome.service import Service
-service = Service("./chrome/chromedriver.exe")
+
+def web_client(browser_type: str = None) -> WebDriver:
+    # 如果没有指定浏览器类型，则自动检测电脑上安装的浏览器
+    if browser_type is None:
+        # 检查Chrome浏览器是否安装
+        if shutil.which("chrome") or shutil.which("google-chrome") or \
+                os.path.exists("C:/Program Files/Google/Chrome/Application/chrome.exe") or \
+                os.path.exists("C:/Program Files (x86)/Google/Chrome/Application/chrome.exe"):
+            browser_type = 'chrome'
+        # 检查Edge浏览器是否安装
+        elif shutil.which("msedge") or \
+                os.path.exists("C:/Program Files (x86)/Microsoft/Edge/Application/msedge.exe") or \
+                os.path.exists("C:/Program Files/Microsoft/Edge/Application/msedge.exe"):
+            browser_type = 'edge'
+        else:
+            raise Exception("未找到已安装的浏览器")
+
+    if browser_type == 'chrome':
+        options = webdriver.ChromeOptions()
+        options.add_argument('disable-infobars')
+        options.set_capability('goog:loggingPrefs', {'browser': 'ALL'})
+        options.add_argument('--disable-blink-features=AutomationControlled')
+        client = webdriver.Chrome(options=options, service=chrome)
+        return client
+    elif browser_type == 'edge':
+        options = webdriver.EdgeOptions()
+        options.add_argument('disable-infobars')
+        options.set_capability('goog:loggingPrefs', {'browser': 'ALL'})
+        options.add_argument('--disable-blink-features=AutomationControlled')
+        client = webdriver.Edge(options=options, service=edge)
+        return client
+    else:
+        raise ValueError(f"不支持的浏览器类型: {browser_type}")
+
 
 def test30():
     base_url = 'https://spiderbuf.cn/web-scraping-practice/scraper-practice-c04'
     if __name__ == '__main__':
-        options = webdriver.ChromeOptions()
-        options.add_argument('disable-infobars')
-        options.set_capability('goog:loggingPrefs', {'browser': 'ALL'})
-
-        options.add_argument('--disable-blink-features=AutomationControlled')  # 改变navigator.webdriver 属性值
-
-        client = webdriver.Chrome(options=options, service=service)
+        client = web_client()
         print('Getting page...')
         client.get(base_url)
         time.sleep(3)
@@ -499,8 +533,119 @@ def test30():
         for item in items:
             spans = item.xpath('.//span')
             s = ''.join(spans[3].xpath('string(.)'))
-            results.append(int(re.findall('\d+', spans[0].text)[0]) + int(''.join(re.findall('\d+', s))))
+            results.append(int(re.findall(r'\d+', spans[0].text)[0]) + int(''.join(re.findall(r'\d+', s))))
         print(np.average(results))
 
 
-test30()
+def test31():
+    base_url = 'https://spiderbuf.cn/web-scraping-practice/scraper-practice-c05'
+    if __name__ == '__main__':
+        client = web_client()
+        print('Getting page...')
+        client.get(base_url)
+        time.sleep(3)
+
+        result = client.execute_script('''const bytes = CryptoJS.AES.decrypt(_0x2d8e()[6], _0x2d8e()[31]);
+        return bytes.toString(CryptoJS.enc.Utf8);''')
+        list1 = json.loads(result)
+        print("出发地", "目的地", "票价")
+        for item in list1["flights"]:
+            print(item["from"], item["to"], item["price"])
+        client.quit()
+
+
+def test31():
+    score = []
+    # 获取固定数据
+    html1 = requests.get("https://spiderbuf.cn/web-scraping-practice/scraper-practice-c06",
+                         headers={"User-Agent": UserAgent().random
+                             , 'Referer': 'https://spiderbuf.cn/web-scraping-practice/scraper-practice-c06'}
+                         ).text
+    root = etree.HTML(html1)
+    divs = root.xpath('//div[@style="margin: 30px 0;"]')
+    for div in divs:
+        title = div.xpath('./h2/text()')
+        kv = div.xpath('./div[@class="detail"]/p')
+        print("电影======>【%s】" % title[0])
+        for p in kv:
+            spans = p.xpath('./span')
+            print(spans[0].text, spans[1].text)
+        score.append(float(kv[0].xpath('./span[2]')[0].text))
+
+        # 获取随机数、时间戳、签名 数据
+    random_num = random.randint(2000, 5000)
+    timestamp = int(time.time() * 1000) // 1000
+    signture = hashlib.md5(f"{random_num}{timestamp}".encode()).hexdigest()
+
+    json_str = json.dumps({"random": random_num, "timestamp": timestamp, "signature": signture})
+
+    page_url = "https://spiderbuf.cn/web-scraping-practice/scraper-practice-c06"
+    html = requests.post(page_url, headers={"User-Agent": UserAgent().random
+        , 'Referer': 'https://spiderbuf.cn/web-scraping-practice/scraper-practice-c06'
+        ,
+                                            'Cookie': '_ga=GA1.1.1043829972.1761277669; __gads=ID=06b8cc1617c12388:T=1761277669:RT=1761882694:S=ALNI_MaZu-71uYn7ikqPYEE6xou8tBbjTQ; __gpi=UID=000011a8007e8034:T=1761277669:RT=1761882694:S=ALNI_MY_9iVn1BDR3VHCXFFUrcl8OJ26pQ; __eoi=ID=ed364995d31e7872:T=1761277669:RT=1761882694:S=AA-AfjYOtJgk2yyo6t28vRjsBJqp; _asd2sdf99=gvGAJJbfZxDhI17Eu59KPhAkT1nzJ6zM; _ga_7B42BKG1QE=GS2.1.s1761887007$o21$g1$t1761887011$j56$l0$h0'},
+                         json=json_str).text
+    print(html)
+    json_str = json.loads(html)
+    for item in json_str:
+        print("title:", item["title"])
+        print("year:", item["year"])
+        print("director:", item["director"])
+        print("scriptwriter:", item["scriptwriter"])
+        print("performer:", item["performer"])
+        print("genre:", item["genre"])
+        print("area:", item["area"])
+        print("language:", item["language"])
+        print("alias:", item["alias"])
+        print("imdb:", item["imdb"])
+        print("release_date:", item["release_date"])
+        print("runtime:", item["runtime"])
+        print("rating:", item["rating"])
+        print("star5:", item["star5"])
+        print("star4:", item["star4"])
+        print("star3:", item["star3"])
+        print("star2:", item["star2"])
+        print("star1:", item["star1"])
+        print("better1:", item["better1"])
+        print("better2:", item["better2"])
+        print("summary:", item["summary"])
+        print("poster_path:", item["poster_path"])
+        print("-" * 50)  # 分隔线
+        score.append(float(item["rating"]))
+
+    # 计算总和
+    print(f"总和：{sum(score)}")
+
+
+def test32():
+    # 获取固定数据
+    html1 = requests.get("https://spiderbuf.cn/web-scraping-practice/scraper-practice-c07",
+                         headers={"User-Agent": UserAgent().random
+                             , 'Referer': 'https://spiderbuf.cn/web-scraping-practice/scraper-practice-c07'}
+                         ).text
+    root = etree.HTML(html1)
+    token = root.xpath('//input[@id="token"]')[0].attrib["value"]
+    timestamp = int(time.time())
+    characters = string.ascii_letters + string.digits
+    key = ''.join(random.choice(characters) for _ in range(32))
+
+    sign_str = f"{timestamp}{token}{key}"
+    md5 = hashlib.md5(sign_str.encode('utf-8')).hexdigest()
+    cookie = f"_asd2sdf99={md5}"
+
+    html = requests.post("https://spiderbuf.cn/web-scraping-practice/scraper-practice-c07",
+                         headers={"User-Agent": UserAgent().random
+                             , 'Referer': 'https://spiderbuf.cn/web-scraping-practice/scraper-practice-c07'
+                             ,
+                                  'Cookie': f'_ga=GA1.1.1043829972.1761277669; __gads=ID=06b8cc1617c12388:T=1761277669:RT=1761889490:S=ALNI_MaZu-71uYn7ikqPYEE6xou8tBbjTQ; __gpi=UID=000011a8007e8034:T=1761277669:RT=1761889490:S=ALNI_MY_9iVn1BDR3VHCXFFUrcl8OJ26pQ; __eoi=ID=ed364995d31e7872:T=1761277669:RT=1761889490:S=AA-AfjYOtJgk2yyo6t28vRjsBJqp; _ga_7B42BKG1QE=GS2.1.s1761887007$o21$g1$t1761889658$j49$l0$h0; {cookie}'
+                                  }
+                         , json={"token": token, "timestamp": timestamp, "key": key}
+                         ).text
+    json_str = json.loads(html)
+    print(" | ".join(json_str[0].keys()))
+    score = []
+    for item in json_str:
+        item["cpc_usd"] = (item["cpc_usd"] ^ item["monthly_search_volume"]) / 100
+        print(" | ".join(map(lambda x: str(x), item.values())))
+        score.append(item["cpc_usd"])
+    print(f"平均值：{sum(score) / len(score)}")
