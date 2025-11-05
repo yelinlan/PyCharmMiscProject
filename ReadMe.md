@@ -15,3 +15,7 @@ pip install -r requirements.txt
 
 [Gradio 官方快速入门]( https://gradio.org.cn/guides/quickstart)
 
+[十分钟讲解Matplotlib的核心内容与基本逻辑]( https://www.bilibili.com/video/BV1Pe4y1R79d)
+
+[十分钟讲解Numpy核心内容]( https://www.bilibili.com/video/BV1rY4y1G7QK)
+
