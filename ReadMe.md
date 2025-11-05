@@ -1,6 +1,11 @@
 # 自学Python
 
 ## 🎥 这是B站视频教程
+安装依赖
+``` bash
+pip install -r requirements.txt
+```
+链接
 
 [Python从入门到精通](https://www.bilibili.com/video/BV1rpWjevEip)
 
