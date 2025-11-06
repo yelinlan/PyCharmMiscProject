@@ -99,6 +99,7 @@ def string():
     # 改变步长
     print(parent_str[-1:-5])  # 步长为1 截取不到值
     print(parent_str[-1:-5:-1])  # 步长为-1 可以截取到值
+    print(parent_str[::-1])
 
 
 # 测试字符串操作
@@ -532,4 +533,4 @@ def generator_operation():
 
 # 按装订区域中的绿色按钮以运行脚本。
 if __name__ == '__main__':
-    generator_operation()
+    string()
