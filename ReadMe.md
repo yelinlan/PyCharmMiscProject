@@ -19,3 +19,5 @@ pip install -r requirements.txt
 
 [十分钟讲解Numpy核心内容]( https://www.bilibili.com/video/BV1rY4y1G7QK)
 
+[良心总结帖:十分钟了解Pandas核心内容]( https://www.bilibili.com/video/BV1rt4y1W769)
+
