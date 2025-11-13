@@ -1,0 +1,10 @@
+# 全局配置切换命令（支持传入仓库名参数）
+git config --global alias.github '!f() { git remote set-url origin https://github.com/yelinlan/$1.git; }; f'
+git config --global alias.gitee '!f() { git remote set-url origin https://gitee.com/yelinlan/$1.git; }; f'
+
+# 切换到当前项目的git仓库
+git github PyCharmMiscProject
+git gitee PyCharmMiscProject
+
+#查看当前仓库
+git remote -v
